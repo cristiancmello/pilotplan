@@ -1,0 +1,22 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# Dynamodb local files
+.dynamodb
+
+# AWS CDK files
+cdk.context.json
+
+credentials
+
+.envrc
+
+cdk.context.json 

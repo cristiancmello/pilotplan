@@ -1,0 +1,47 @@
+service: serverless-pilotplan
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+package:
+  individually: true
+
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules:
+      forceInclude:
+        - aws-cdk
+  ssmSecrets:
+    operatorPath: /pilotplan/cristian.pilotplan.admin.sysops
+    cdkBuilderPath: ${self:custom.ssmSecrets.operatorPath}/CDKBUILDER
+    
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: 'us-east-1'
+  stage: ${opt:stage, 'development'}
+  logRetentionInDays: 30
+  environment:
+    APP_ENV: ${self:provider.stage}
+    CDKBUILDER_AWS_DEFAULT_REGION: ${self:provider.region}
+    CDKBUILDER_AWS_ACCOUNT: ${ssm:${self:custom.ssmSecrets.cdkBuilderPath}/AWS_ACCOUNT~true}
+    CDKBUILDER_AWS_ACCESS_KEY_ID: ${ssm:${self:custom.ssmSecrets.cdkBuilderPath}/AWS_ACCESS_KEY_ID~true}
+    CDKBUILDER_AWS_SECRET_ACCESS_KEY: ${ssm:${self:custom.ssmSecrets.cdkBuilderPath}/AWS_SECRET_ACCESS_KEY~true}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "*"
+      Resource:
+        - "*"
+    - Effect: "Allow"
+      Action:
+        - "ssm:DescribeParameters"
+      Resource:
+        - "*"
+
+functions:
+  cdkDeploy:
+    handler: src/functions/cdkDeploy.handler
+    timeout: 900

@@ -1,0 +1,48 @@
+{
+  "name": "pilotplan",
+  "version": "0.1.0",
+  "description": "PilotPlan, the Constructor",
+  "repository": "git@github.com:cristiancmello/pilotplan.git",
+  "author": "Cristian Mello <cristianc.mello@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "deploy:prod": "serverless deploy -s production",
+    "deploy:dev": "serverless deploy -s development",
+    "start": "serverless offline start --noTimeout --port 3000",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "cdk:deploy": "./node_modules/.bin/cdk",
+    "sls:invoke:local:watch": "sls invoke local --watch -f"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-autoscaling": "^1.32.1",
+    "@aws-cdk/aws-cloudfront": "^1.32.1",
+    "@aws-cdk/aws-ec2": "^1.32.1",
+    "@aws-cdk/aws-iam": "^1.32.1",
+    "@aws-cdk/aws-lambda": "^1.32.1",
+    "@aws-cdk/aws-sns-subscriptions": "^1.32.1",
+    "@aws-cdk/core": "^1.32.1",
+    "@aws/dynamodb-data-mapper": "^0.7.3",
+    "@aws/dynamodb-data-mapper-annotations": "^0.7.3",
+    "aws-cdk": "^1.32.1",
+    "aws-sdk": "^2.656.0",
+    "babel-runtime": "^6.26.0",
+    "shelljs": "^0.8.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "jest": "^25.3.0",
+    "serverless": "^1.67.3",
+    "serverless-offline": "^5.12.1",
+    "serverless-webpack": "^5.3.1",
+    "webpack": "^4.42.1",
+    "webpack-node-externals": "^1.7.2"
+  }
+}
