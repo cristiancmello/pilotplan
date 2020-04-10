@@ -61,7 +61,7 @@ module.exports.handler = async (event) => {
   }
 
   let cdkBinRelativePath = "node_modules/cdk/bin/cdk";
-  let cdkBinFullPath = `${cdkBinRelativePath}`;
+  let cdkBinFullPath = `${cdkRootPath}/${cdkBinRelativePath}`;
   let cdkOutputFullPath = `${process.env.PILOTPLAN_HOME_DIR}/cdk.out`;
   let cdkAppPath = "src/cdkBuilder/bin";
   let appName = "swarmBasicCluster";
