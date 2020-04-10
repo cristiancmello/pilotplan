@@ -12,7 +12,12 @@ custom:
     webpackConfig: 'webpack.config.js'
     includeModules:
       forceInclude:
-        - aws-cdk
+        - '@aws-cdk/cx-api'
+        - '@aws-cdk/core'
+        - 'aws-cdk'
+        - 'cdk'
+        - 'constructs'
+        
   ssmSecrets:
     operatorPath: /pilotplan/cristian.pilotplan.admin.sysops
     cdkBuilderPath: ${self:custom.ssmSecrets.operatorPath}/CDKBUILDER
@@ -25,6 +30,7 @@ provider:
   logRetentionInDays: 30
   environment:
     APP_ENV: ${self:provider.stage}
+    PILOTPLAN_HOME_DIR: '/tmp'
     CDKBUILDER_AWS_DEFAULT_REGION: ${self:provider.region}
     CDKBUILDER_AWS_ACCOUNT: ${ssm:${self:custom.ssmSecrets.cdkBuilderPath}/AWS_ACCOUNT~true}
     CDKBUILDER_AWS_ACCESS_KEY_ID: ${ssm:${self:custom.ssmSecrets.cdkBuilderPath}/AWS_ACCESS_KEY_ID~true}

@@ -2,8 +2,7 @@ const path = require("path");
 const slsWebpack = require("serverless-webpack");
 const webpack = require("webpack");
 const nodeExternals = require("webpack-node-externals");
-
-// const ASSET_PATH = process.env.ASSET_PATH || "/";
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: slsWebpack.lib.entries,
@@ -15,14 +14,12 @@ module.exports = {
     libraryTarget: "commonjs",
     path: path.join(__dirname, ".webpack"),
     filename: "[name].js",
-    // publicPath: ASSET_PATH,
   },
-  // plugins: [
-  //   // This makes it possible for us to safely use env vars on our code
-  //   new webpack.DefinePlugin({
-  //     "process.env.ASSET_PATH": JSON.stringify(ASSET_PATH),
-  //   }),
-  // ],
+  plugins: [
+    new CopyPlugin([
+      { from: 'src/cdkBuilder', to: 'src/cdkBuilder' }
+    ]),
+  ],
   module: {
     rules: [
       {

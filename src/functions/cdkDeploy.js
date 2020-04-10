@@ -1,65 +1,44 @@
-import { spawn } from "child_process";
+import { spawn, exec, spawnSync } from "child_process";
+import { promisify } from "util";
 
-const callCdkDeploySync = async (props) => {
+const spawnPromise = promisify(spawn)
+
+const callCdkDeploySync = async (cdkDeploySyncParams) => {
   try {
     const {
-      appName,
-      cdkBinPath,
-      defaultCdkAppPath,
-      defaultCdkAppExtension,
-      cdkRootPath,
+      cdkAppFullPath,
+      cdkBinFullPath,
+      cdkOutputFullPath,
       awsCredentials,
       awsRegion,
-      cdkOutputDir,
-    } = props;
+    } = cdkDeploySyncParams;
 
-    const cdkDeployAppArg = `${defaultCdkAppPath}/${appName}.${defaultCdkAppExtension}`,
-      cdkArgs = [
+    const cdkArgs = [
         "deploy",
         "-o",
-        cdkOutputDir,
+        cdkOutputFullPath,
         "--app",
-        cdkDeployAppArg,
+        cdkAppFullPath,
         "--require-approval",
         "never",
       ];
 
-    const { PATH, IS_LOCAL, APP_ENV, LAMBDA_TASK_ROOT } = process.env;
+    const { PATH, IS_LOCAL, APP_ENV, PILOTPLAN_HOME_DIR } = process.env;
 
-    // const childPromisePromise = spawn(cdkBinPath, cdkArgs, {
-    //   cwd: cdkRootPath,
-    //   env: {
-    //     PATH,
-    //     IS_LOCAL,
-    //     APP_ENV,
-    //     LAMBDA_TASK_ROOT,
-    //     AWS_REGION: awsRegion,
-    //     ...awsCredentials,
-    //   },
-    // });
-
-    const childPromisePromise = spawn("ls", {
-      cwd: "/var/task",
+    const callSpawnPromise = spawnPromise(cdkBinFullPath, cdkArgs, {
+      stdio: 'inherit',
+      cwd: PILOTPLAN_HOME_DIR,
       env: {
-        PATH,
-        IS_LOCAL,
+        PATH, 
+        IS_LOCAL, 
         APP_ENV,
+        HOME: PILOTPLAN_HOME_DIR,
         AWS_REGION: awsRegion,
         ...awsCredentials,
-      },
-    });
+      }
+    })
 
-    childPromisePromise.on("exit", (code, signal) => {
-      console.log(`Exited with code ${code} and signal ${signal}`);
-    });
-
-    childPromisePromise.stderr.on("data", (data) => {
-      console.log(`[stderr]:`, data.toString());
-    });
-
-    childPromisePromise.stdout.on("data", (data) => {
-      console.log(`[stdout]:`, data.toString());
-    });
+    await callSpawnPromise
 
     return {
       command: {
@@ -73,25 +52,26 @@ const callCdkDeploySync = async (props) => {
 };
 
 export const handler = async (event) => {
-  let cdkBinPath = "node_modules/.bin/cdk";
-
-  if (process.env.IS_LOCAL == false) {
-    cdkBinPath = "/var/task";
+  let cdkRootPath = '/var/task'
+  let cdkBinRelativePath = 'node_modules/.bin/cdk'
+  let cdkBinFullPath = `${cdkRootPath}/${cdkBinRelativePath}`
+  let cdkOutputFullPath = `${process.env.PILOTPLAN_HOME_DIR}/cdk.out`
+  let cdkAppPath = 'src/cdkBuilder/bin'
+  let appName = 'swarmBasicCluster'
+  let cdkAppFullPath = `${cdkRootPath}/${cdkAppPath}/${appName}.js`
+  let awsCredentials = {
+    AWS_ACCESS_KEY_ID: null || process.env.CDKBUILDER_AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY: null || process.env.CDKBUILDER_AWS_SECRET_ACCESS_KEY,
   }
+  
+  let awsRegion = null || process.env.CDKBUILDER_AWS_DEFAULT_REGION
 
   const output = await callCdkDeploySync({
-    appName: "swarmBasicCluster",
-    cdkBinPath,
-    defaultCdkAppPath: "src/cdkBuilder/bin",
-    defaultCdkAppExtension: "js",
-    cdkRootPath: "../../",
-    cdkOutputDir: "/tmp/cdk.out",
-    awsCredentials: {
-      AWS_ACCESS_KEY_ID: null || process.env.CDKBUILDER_AWS_ACCESS_KEY_ID,
-      AWS_SECRET_ACCESS_KEY:
-        null || process.env.CDKBUILDER_AWS_SECRET_ACCESS_KEY,
-    },
-    awsRegion: null || process.env.CDKBUILDER_AWS_DEFAULT_REGION,
+    cdkAppFullPath,
+    cdkBinFullPath,
+    cdkOutputFullPath,
+    awsCredentials,
+    awsRegion,
   });
 
   return {
