@@ -23,3 +23,5 @@ credentials
 .envrc
 
 cdk.context.json 
+
+.cdk
