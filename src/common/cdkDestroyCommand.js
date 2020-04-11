@@ -1,41 +1,32 @@
 const { exec } = require("child_process");
 const { promisify } = require("util");
 
-const { CdkDeployParams } = require("../common/CdkDeployParams");
+const { CdkDestroyParams } = require("../common/CdkDestroyParams");
 
 const execPromise = promisify(exec);
 
 /**
- * Call Cdk Deploy command.
+ * Call Cdk Destroy command.
  *
  * @example
- * const response = await callCdkDeploySync(
- *   new CdkDeployParams("emptyApp", "us-east-1", {})
+ * const response = await callCdkDestroySync(
+ *   new CdkDestroyParams("emptyApp", "us-east-1", {})
  * );
  *
- * @param {CdkDeployParams} cdkDeploySyncParams
+ * @param {CdkDeployParams} cdkDestroySyncParams
  */
-const callCdkDeploySync = async (cdkDeploySyncParams) => {
+const callCdkDestroySync = async (cdkDestroySyncParams) => {
   try {
     const {
       appName,
       cdkAppFullPath,
       cdkBinFullPath,
-      cdkOutputFullPath,
       awsCredentials,
       awsRegion,
       extraParams,
-    } = cdkDeploySyncParams;
+    } = cdkDestroySyncParams;
 
-    const cdkArgsArray = [
-      "deploy",
-      "-o",
-      cdkOutputFullPath,
-      "--app",
-      cdkAppFullPath,
-      "--require-approval",
-      "never",
-    ];
+    const cdkArgsArray = ["destroy", "--app", cdkAppFullPath, "--force"];
 
     let cdkArgsString = cdkArgsArray.join(" ");
     let cdkCommand = `${cdkBinFullPath} ${cdkArgsString}`;
@@ -89,5 +80,5 @@ const callCdkDeploySync = async (cdkDeploySyncParams) => {
 };
 
 module.exports = {
-  callCdkDeploySync,
+  callCdkDestroySync,
 };
