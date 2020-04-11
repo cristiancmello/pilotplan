@@ -23,8 +23,7 @@
     "@aws/dynamodb-data-mapper-annotations": "^0.7.3",
     "aws-cdk": "^1.32.2",
     "aws-sdk": "^2.656.0",
-    "cdk": "^1.32.2",
-    "constructs": "^2.0.1"
+    "cdk": "^1.32.2"
   },
   "devDependencies": {
     "jest": "^25.3.0",
