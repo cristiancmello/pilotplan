@@ -6,5 +6,6 @@ cache:
     - node_modules
 script:
     - yarn
-    - yarn test
-    - yarn deploy:dev --conceal
+    - yarn test || travis_terminate 1;
+    - yarn deploy:dev --conceal || travis_terminate 1;
+    - yarn sls:remove || travis_terminate 1;
