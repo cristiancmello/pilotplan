@@ -1,6 +1,6 @@
 const cdk = require("@aws-cdk/core");
 
-class CdkSampleAppStack extends cdk.Stack {
+class EmptyCdkApp extends cdk.Stack {
   /**
    *
    * @param {cdk.Construct} scope
@@ -14,4 +14,4 @@ class CdkSampleAppStack extends cdk.Stack {
   }
 }
 
-module.exports = { CdkSampleAppStack };
+module.exports = { EmptyCdkApp };

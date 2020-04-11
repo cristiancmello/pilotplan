@@ -16,6 +16,7 @@ provider:
   logRetentionInDays: 30
   environment:
     APP_ENV: ${self:provider.stage}
+    CDKDEPLOY_LAMBDA_FUNCTION: ${self:service}-${self:provider.stage}-cdkDeploy
     CDKBUILDER_AWS_DEFAULT_REGION: ${self:provider.region}
     CDKBUILDER_AWS_ACCOUNT: ${ssm:${self:custom.ssmSecrets.cdkBuilderPath}/AWS_ACCOUNT~true}
     CDKBUILDER_AWS_ACCESS_KEY_ID: ${ssm:${self:custom.ssmSecrets.cdkBuilderPath}/AWS_ACCESS_KEY_ID~true}
@@ -36,3 +37,7 @@ functions:
   cdkDeploy:
     handler: src/functions/cdkDeploy.handler
     timeout: 900
+  cdkDeployTest:
+    handler: src/functions/cdkDeployTest.handler
+    events:
+      - http: POST /cdk-deploy/test
