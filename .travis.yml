@@ -7,5 +7,4 @@ cache:
 script:
     - yarn
     - yarn test || travis_terminate 1;
-    - yarn deploy:dev --conceal || travis_terminate 1;
-    - yarn sls:remove || travis_terminate 1;
+    - yarn deploy:dev || travis_terminate 1;
