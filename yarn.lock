@@ -1002,9 +1002,9 @@
     ncjsm "^4.0.1"
 
 "@serverless/platform-client-china@^1.0.2":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@serverless/platform-client-china/-/platform-client-china-1.0.3.tgz#028120e35067eae8a2ba818997d57df9a0ad573f"
-  integrity sha512-+MqqHJ7OEQzHGmZy56sBxSwgqY77PDAjOh7HFi4bddlEa47+DzpTuKS/9fgJ92YF27hnb5cf754eeeyE4ljWmA==
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@serverless/platform-client-china/-/platform-client-china-1.0.5.tgz#1a19ad25835aaa1425225a1a218e36a5cba02326"
+  integrity sha512-EhiVkC3qh8uZQjcIXbN7n1eVCKiyvriJjghbOe4cigkNhT/dHPTFM23aK3h/rJowfP9P5+R4xfKsaCWRjA8Y3Q==
   dependencies:
     "@serverless/utils-china" latest
     adm-zip "^0.4.13"
@@ -2390,7 +2390,7 @@ configstore@^4.0.0:
     write-file-atomic "^2.0.0"
     xdg-basedir "^3.0.0"
 
-constructs@^2.0.0, constructs@^2.0.1:
+constructs@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/constructs/-/constructs-2.0.1.tgz#274d6b8ce6a698813495c444466b0c745349ddb5"
   integrity sha512-edR85YFGI9TBT9byAo5vAfI0PRi+jFGzinwN3RAJwKfv6Yc9x9kALYfoEmgotp95qT7/k/iUQWHrH9BMJeqpdg==
