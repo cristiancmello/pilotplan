@@ -3,16 +3,16 @@ const { promisify } = require("util");
 
 const { CdkDeployParams } = require("../common/CdkDeployParams");
 
-const execPromise = promisify(exec)
+const execPromise = promisify(exec);
 
 /**
  * Call Cdk Deploy command.
- * 
- * @example 
+ *
+ * @example
  * const response = await callCdkDeploySync(
  *   new CdkDeployParams("emptyApp", "us-east-1", {})
  * );
- * 
+ *
  * @param {CdkDeployParams} cdkDeploySyncParams
  */
 const callCdkDeploySync = async (cdkDeploySyncParams) => {
@@ -24,7 +24,7 @@ const callCdkDeploySync = async (cdkDeploySyncParams) => {
       cdkOutputFullPath,
       awsCredentials,
       awsRegion,
-      extraParams
+      extraParams,
     } = cdkDeploySyncParams;
 
     const cdkArgsArray = [
@@ -37,8 +37,8 @@ const callCdkDeploySync = async (cdkDeploySyncParams) => {
       "never",
     ];
 
-    let cdkArgsString = cdkArgsArray.join(' ')
-    let cdkCommand = `${cdkBinFullPath} ${cdkArgsString}`
+    let cdkArgsString = cdkArgsArray.join(" ");
+    let cdkCommand = `${cdkBinFullPath} ${cdkArgsString}`;
 
     let { PATH, IS_LOCAL, APP_ENV, PILOTPLAN_HOME_DIR } = process.env;
 
@@ -68,7 +68,7 @@ const callCdkDeploySync = async (cdkDeploySyncParams) => {
       console.log(`${cdkBinFullPath} exited with ${code}, signal ${signal}`);
     });
 
-    await callSpawnPromise
+    await callSpawnPromise;
 
     return {
       command: cdkCommand,

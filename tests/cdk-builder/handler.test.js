@@ -1,20 +1,34 @@
 const AWS = require("aws-sdk");
 
-const lambda = new AWS.Lambda({
-  region: "us-east-1",
+const { CdkDeployParams } = require("../../src/common/CdkDeployParams");
+const { callCdkDeploySync } = require("../../src/common/cdkDeployCommand");
+
+beforeEach(async () => {
+  jest.setTimeout(15000);
 });
 
-const callCdkDeployLambda = (params) => {
-  return lambda.invokeAsync(params).promise();
-};
-
 test("call cdkDeploy without errors", async () => {
-  expect(process.env.NODE_ENV).toBe("test");
+  let awsAccessKeyId = null,
+    awsSecretAccessKey = null;
 
-  const response = await callCdkDeployLambda({
-    FunctionName: `serverless-pilotplan-development-cdkDeploy`,
-    InvokeArgs: Buffer.from(JSON.stringify({})),
-  });
+  if (process.env.NODE_ENV === "test") {
+    awsAccessKeyId = process.env.AWS_ACCESS_KEY_ID;
+    awsSecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  }
+
+  const response = await callCdkDeploySync(
+    new CdkDeployParams(
+      "emptyApp",
+      "us-east-1",
+      {
+        test: {
+          message: "hello, world!",
+        },
+      },
+      awsAccessKeyId,
+      awsSecretAccessKey
+    )
+  );
 
   console.log(response);
 });

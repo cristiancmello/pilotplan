@@ -1,15 +1,25 @@
 class CdkDeployParams {
-  constructor(appName, region, extraParams, awsAccessKeyId, awsSecretAccessKey) {
+  constructor(
+    appName,
+    region,
+    extraParams,
+    awsAccessKeyId,
+    awsSecretAccessKey
+  ) {
     this.region = region;
     this.extraParams = JSON.stringify(extraParams);
 
     if (new String(appName).match(/^(?!\d)(\w*)$/) === null) {
-      throw new Error(`Application Name '${appName}' not valid.`)
+      throw new Error(`Application Name '${appName}' not valid.`);
     }
 
     this.appName = appName;
-
     this.cdkRootPath = "/var/task";
+
+    if (process.env.NODE_ENV === "test") {
+      this.cdkRootPath = process.cwd();
+    }
+
     process.env.PILOTPLAN_HOME_DIR = "/tmp";
 
     if (process.env.IS_LOCAL) {
