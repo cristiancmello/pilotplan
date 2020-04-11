@@ -6,4 +6,5 @@ cache:
     - node_modules
 script:
     - yarn
+    - yarn test
     - yarn deploy:dev --conceal
