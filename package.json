@@ -14,7 +14,8 @@
     "cdk:deploy": "./node_modules/.bin/cdk",
     "sls:invoke:local:watch": "serverless invoke local --watch -f",
     "sls:invoke": "serverless invoke -f",
-    "sls:package": "serverless package"
+    "sls:package": "serverless package",
+    "sls:destroy": "serverless remove"
   },
   "dependencies": {
     "@aws-cdk/core": "^1.32.2",
