@@ -6,19 +6,9 @@ An API to manager Deployment of AWS CDK and Cloudformation stacks.
 
 ## Requisites
 
-### Environment variables
+### PilotPlan deployment director
 
-```sh
-export AWS_ACCESS_KEY_ID=AKIA....
-export AWS_SECRET_ACCESS_KEY=acbd123...
-export AWS_REGION=us-east-1
-
-# for testing
-export AWS_AMI_DEFAULT=ami-abcd....
-export DEFAULT_KEYPAIR_NAME=.....pem
-```
-
-### Deployment Director User
+* IAM User
 
 * Permissions:
   - AdministratorAccess
@@ -37,3 +27,16 @@ export DEFAULT_KEYPAIR_NAME=.....pem
     ```
 
 * In **Security Credentials**, **create access keys**.
+
+### Environment variables
+
+```sh
+# PilotPlan deployment director 
+export AWS_ACCESS_KEY_ID={PilotPlan deployment director Access Key Id}
+export AWS_SECRET_ACCESS_KEY={PilotPlan deployment director Access Secret Key}
+export AWS_REGION=us-east-1
+
+# for testing
+export AWS_AMI_DEFAULT=ami-abcd....
+export DEFAULT_KEYPAIR_NAME=.....pem
+```
