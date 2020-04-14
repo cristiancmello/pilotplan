@@ -7,20 +7,24 @@ const {
   SwarmBasicCluster,
 } = require("../../src/cdkBuilder/components/SwarmBasicCluster");
 
+const {
+  defaultAmi,
+  appName,
+  stackName,
+  keyPairName,
+  rndStr,
+} = require("../common/variables").swarmBasicCluster;
+
 test("SwarmBasicCluster created", () => {
   const app = new cdk.App({
     outdir: "./cdk.swarmBasicCluster.out",
   });
 
-  const swarmBasicCluster = new SwarmBasicCluster(app, "swarmBasicCluster", {
-    defaultAmi: "ami-02754f8fca803b3a8",
-    credentials: {
-      aws_secret_access_key: "AKIAWCMCEPMLRAL4TPNJ",
-      aws_access_key_id: "mNu/IjZFyshmEH+3j/11zFeZVfuvKYYLp0WF48dg",
-      aws_region: "us-east-1",
-    },
-    description: "Swarm Basic Cluster",
-    stackName: "cfstackABCD-swarmBasicCluster",
+  const swarmBasicCluster = new SwarmBasicCluster(app, appName, {
+    defaultAmi,
+    stackName,
+    keyPairName,
+    rndStr,
   });
 
   expectCdk(swarmBasicCluster).to(
@@ -34,7 +38,7 @@ test("SwarmBasicCluster created", () => {
   expectCdk(swarmBasicCluster).to(
     haveResource("AWS::EC2::SecurityGroup", {
       GroupDescription: "Docker Swarm Manager SG",
-      GroupName: "swarm-manager-sg-swarmBasicCluster",
+      GroupName: `swarm-manager-sg-${stackName}`,
       SecurityGroupIngress: [
         {
           CidrIp: "0.0.0.0/0",
@@ -48,7 +52,7 @@ test("SwarmBasicCluster created", () => {
 
   expectCdk(swarmBasicCluster).to(
     haveResource("AWS::EC2::LaunchTemplate", {
-      LaunchTemplateName: "swarm-node-manager-launchtemplate-swarmBasicCluster",
+      LaunchTemplateName: `swarm-node-manager-launchtemplate-${stackName}`,
     })
   );
 
@@ -56,7 +60,6 @@ test("SwarmBasicCluster created", () => {
     expectCdk(swarmBasicCluster).value.Resources.managerLaunchTemplate
   ).toMatchObject({
     Properties: {
-      LaunchTemplateName: "swarm-node-manager-launchtemplate-swarmBasicCluster",
       LaunchTemplateData: {
         CapacityReservationSpecification: {
           CapacityReservationPreference: "open",
@@ -66,10 +69,10 @@ test("SwarmBasicCluster created", () => {
         },
         DisableApiTermination: false,
         EbsOptimized: false,
-        ImageId: "ami-02754f8fca803b3a8",
+        ImageId: defaultAmi,
         InstanceInitiatedShutdownBehavior: "terminate",
         InstanceType: "t3a.micro",
-        KeyName: "wordpress-ops-host-keypair-2020-03-11",
+        KeyName: keyPairName,
         Monitoring: {
           Enabled: false,
         },
@@ -84,13 +87,19 @@ test("SwarmBasicCluster created", () => {
 
   expectCdk(swarmBasicCluster).to(
     haveOutput({
-      exportName: "managerVpcId",
+      exportName: `${rndStr}-vpcId`,
     })
   );
 
-  // expectCdk(swarmBasicCluster).to(
-  //   haveOutput({
-  //     exportName: "rootOperatorIamAccessKey",
-  //   })
-  // );
+  expectCdk(swarmBasicCluster).to(
+    haveOutput({
+      exportName: `${rndStr}-rootUserOperatorAccessKey`,
+    })
+  );
+
+  expectCdk(swarmBasicCluster).to(
+    haveOutput({
+      exportName: `${rndStr}-rootUserOperatorSecretKey`,
+    })
+  );
 });
