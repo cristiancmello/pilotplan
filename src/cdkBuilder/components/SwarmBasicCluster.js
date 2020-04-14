@@ -29,15 +29,15 @@ class SwarmBasicCluster extends Stack {
   }
 
   createResources = (id, props) => {
-    this.rootUserOperator();
-    this.defaultVpc();
+    this.rootUserOperator(props);
+    this.defaultVpc(props);
     this.managerSecurityGroup();
     this.managerLaunchTemplate(props);
   };
 
-  rootUserOperator = () => {
+  rootUserOperator = (props) => {
     const create = this.setConfig(iam.CfnUser, "rootUserOperator", {
-      userName: `root.ops.${this.stackName}`,
+      userName: `root.ops.${props.rndStr}`,
       policies: [
         {
           policyName: "AdministratorAccess",
@@ -77,17 +77,17 @@ class SwarmBasicCluster extends Stack {
     );
 
     createAccessKeyOutput({
-      exportName: "rootUserOperatorAccessKey",
+      exportName: `${props.rndStr}-rootUserOperatorAccessKey`,
       value: this.createdAccessKey.ref,
     });
 
     createSecretKeyOutput({
-      exportName: "rootUserOperatorSecretKey",
+      exportName: `${props.rndStr}-rootUserOperatorSecretKey`,
       value: this.createdAccessKey.attrSecretAccessKey,
     });
   };
 
-  defaultVpc = () => {
+  defaultVpc = (props) => {
     const create = this.setConfig(Vpc, "default", {
       cidr: "10.0.0.0/16",
       maxAzs: 2,
@@ -111,7 +111,7 @@ class SwarmBasicCluster extends Stack {
     this.createdDefaultVpc = create();
 
     createVpcOutput({
-      exportName: "vpcId",
+      exportName: `${props.rndStr}-vpcId`,
       value: this.createdDefaultVpc.vpcId,
     });
   };
