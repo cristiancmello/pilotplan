@@ -15,6 +15,7 @@ export AWS_REGION=us-east-1
 
 # for testing
 export AWS_AMI_DEFAULT=ami-abcd....
+export DEFAULT_KEYPAIR_NAME=.....pem
 ```
 
 ### Deployment Director User
