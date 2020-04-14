@@ -2,12 +2,12 @@ class CdkDestroyParams {
   constructor(
     appName,
     region,
-    extraParams,
     awsAccessKeyId,
-    awsSecretAccessKey
+    awsSecretAccessKey,
+    extraParams
   ) {
     this.region = region;
-    this.extraParams = JSON.stringify(extraParams);
+    this.extraParams = JSON.stringify(extraParams || {});
 
     if (new String(appName).match(/^(?!\d)(\w*)$/) === null) {
       throw new Error(`Application Name '${appName}' not valid.`);

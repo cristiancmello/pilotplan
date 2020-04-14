@@ -13,7 +13,7 @@ const execPromise = promisify(exec);
  *   new CdkDestroyParams("emptyApp", "us-east-1", {})
  * );
  *
- * @param {CdkDeployParams} cdkDestroySyncParams
+ * @param {CdkDestroyParams} cdkDestroySyncParams
  */
 const callCdkDestroySync = async (cdkDestroySyncParams) => {
   try {

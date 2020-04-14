@@ -1,13 +1,22 @@
 class CdkDeployParams {
+  /**
+   * Create Deploy Paramater.
+   *
+   * @param {string} appName - Application Name.
+   * @param {string} region - AWS Region.
+   * @param {Object} extraParams - Extra parameters.
+   * @param {string} awsAccessKeyId - AWS Access Key Id.
+   * @param {string} awsSecretAccessKey - AWS Secret Access Key.
+   */
   constructor(
     appName,
     region,
-    extraParams,
     awsAccessKeyId,
-    awsSecretAccessKey
+    awsSecretAccessKey,
+    extraParams
   ) {
     this.region = region;
-    this.extraParams = JSON.stringify(extraParams);
+    this.extraParams = JSON.stringify(extraParams || {});
 
     if (new String(appName).match(/^(?!\d)(\w*)$/) === null) {
       throw new Error(`Application Name '${appName}' not valid.`);

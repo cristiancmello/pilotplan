@@ -79,6 +79,10 @@ const callCdkDeploySync = async (cdkDeploySyncParams) => {
       appName,
     };
   } catch (error) {
+    if (process.env.NODE_ENV === "test") {
+      console.error(error);
+    }
+
     return {
       error: {
         message: error.message,
