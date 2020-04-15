@@ -117,7 +117,7 @@ class SwarmBasicCluster extends Stack {
   };
 
   managerSecurityGroup = () => {
-    const create = this.setConfig(CfnSecurityGroup, "manager", {
+    const create = this.setConfig(CfnSecurityGroup, "managerSecurityGroup", {
       groupName: `swarm-manager-sg-${this.stackName}`,
       groupDescription: "Docker Swarm Manager SG",
       securityGroupIngress: [

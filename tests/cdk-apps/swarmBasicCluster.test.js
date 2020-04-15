@@ -1,4 +1,11 @@
-const { haveResource, haveOutput, SynthUtils } = require("@aws-cdk/assert");
+const {
+  haveResource,
+  haveOutput,
+  SynthUtils,
+  beASupersetOfTemplate,
+  exactlyMatchTemplate,
+  matchTemplate,
+} = require("@aws-cdk/assert");
 const cdk = require("@aws-cdk/core");
 
 const expectCdk = require("@aws-cdk/assert").expect;
@@ -58,6 +65,9 @@ test("SwarmBasicCluster created without errors", () => {
           ToPort: 65535,
         },
       ],
+      VpcId: {
+        Ref: "defaultC974F9E3",
+      },
     })
   );
 
@@ -89,7 +99,7 @@ test("SwarmBasicCluster created without errors", () => {
         },
         SecurityGroupIds: [
           {
-            "Fn::GetAtt": ["manager", "GroupId"],
+            "Fn::GetAtt": ["managerSecurityGroup", "GroupId"],
           },
         ],
       },
