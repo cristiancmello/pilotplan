@@ -10,15 +10,19 @@ const {
 const {
   defaultAmi,
   appName,
-  stackName,
   keyPairName,
   rndStr,
 } = require("../common/variables").swarmBasicCluster;
 
-test("SwarmBasicCluster created", () => {
-  const app = new cdk.App({
+const createCdkApp = () => {
+  return new cdk.App({
     outdir: "./cdk.swarmBasicCluster.out",
   });
+};
+
+test("SwarmBasicCluster created without errors", () => {
+  const app = createCdkApp();
+  const stackName = "createdWithoutErrors";
 
   const swarmBasicCluster = new SwarmBasicCluster(app, appName, {
     defaultAmi,
@@ -26,6 +30,13 @@ test("SwarmBasicCluster created", () => {
     keyPairName,
     rndStr,
   });
+
+  const managerLaunchTemplateTemplate = expectCdk(swarmBasicCluster).value
+    .Resources.managerLaunchTemplate;
+
+  const userDataStringified = JSON.stringify(
+    managerLaunchTemplateTemplate.Properties.LaunchTemplateData.UserData
+  );
 
   expectCdk(swarmBasicCluster).to(
     haveResource("AWS::EC2::VPC", {
@@ -85,6 +96,10 @@ test("SwarmBasicCluster created", () => {
     },
   });
 
+  expect(userDataStringified).toEqual(
+    expect.stringContaining("{id:setupNodeManagerCreationControl}")
+  );
+
   expectCdk(swarmBasicCluster).to(
     haveOutput({
       exportName: `${rndStr}-vpcId`,
@@ -101,5 +116,31 @@ test("SwarmBasicCluster created", () => {
     haveOutput({
       exportName: `${rndStr}-rootUserOperatorSecretKey`,
     })
+  );
+});
+
+test("SwarmBasicCluster created with Portainer as manager of Docker Swarm Manager Node", () => {
+  const app = createCdkApp();
+  const stackName = "createdWithPortainer";
+
+  const swarmBasicCluster = new SwarmBasicCluster(app, appName, {
+    defaultAmi,
+    stackName,
+    keyPairName,
+    rndStr,
+    manager: {
+      installPortainer: true,
+    },
+  });
+
+  const managerLaunchTemplateTemplate = expectCdk(swarmBasicCluster).value
+    .Resources.managerLaunchTemplate;
+
+  const userDataStringified = JSON.stringify(
+    managerLaunchTemplateTemplate.Properties.LaunchTemplateData.UserData
+  );
+
+  expect(userDataStringified).toEqual(
+    expect.stringContaining("{id:portainerInstallation}")
   );
 });

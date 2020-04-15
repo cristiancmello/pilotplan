@@ -21,18 +21,6 @@ sudo systemctl start rexray
 
 sudo docker swarm init --advertise-addr eth0
 
-# Installing Portainer Server and Agent
-curl -L https://downloads.portainer.io/portainer-agent-stack.yml -o portainer-agent-stack.yml
-docker stack deploy --compose-file=portainer-agent-stack.yml portainer
-
 docker plugin enable rexray/ebs:latest
 docker plugin enable rexray/s3fs:latest
 docker plugin enable rexray/efs:latest
-
-BEARER_TOKEN=$(curl -X POST localhost:9000/api/auth -d "{\"Username\": \"admin\", \"Password\": \"12345678\"}" | jq -r '.jwt')
-
-curl -v -X PUT localhost:9000/api/endpoints/1 \
-    -d "{\"PublicURL\": \"${INSTANCE_PUBLIC_DNS}\"}" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $BEARER_TOKEN" | jq . \
-    >> output.txt
