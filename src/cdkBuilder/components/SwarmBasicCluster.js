@@ -154,11 +154,15 @@ class SwarmBasicCluster extends Stack {
           enabled: false,
         },
         userData: cdk.Fn.base64(
-          ManagerEntrypointFile(this.stackName, {
-            aws_access_key_id: this.createdAccessKey.ref,
-            aws_secret_access_key: this.createdAccessKey.attrSecretAccessKey,
-            aws_region: this.region,
-          })
+          ManagerEntrypointFile(
+            this.stackName,
+            {
+              aws_access_key_id: this.createdAccessKey.ref,
+              aws_secret_access_key: this.createdAccessKey.attrSecretAccessKey,
+              aws_region: this.region,
+            },
+            props.manager
+          )
         ),
         securityGroupIds: [this.createdManagerSecurityGroup.attrGroupId],
       },
