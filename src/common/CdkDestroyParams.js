@@ -1,13 +1,4 @@
-class CdkDeployParams {
-  /**
-   * Create Deploy Paramater.
-   *
-   * @param {string} appName - Application Name.
-   * @param {string} region - AWS Region.
-   * @param {Object} extraParams - Extra parameters.
-   * @param {string} awsAccessKeyId - AWS Access Key Id.
-   * @param {string} awsSecretAccessKey - AWS Secret Access Key.
-   */
+class CdkDestroyParams {
   constructor(
     appName,
     region,
@@ -53,5 +44,5 @@ class CdkDeployParams {
 }
 
 module.exports = {
-  CdkDeployParams,
+  CdkDestroyParams,
 };

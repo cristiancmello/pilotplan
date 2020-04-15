@@ -4,6 +4,7 @@ const cdk = require("@aws-cdk/core");
 const { EmptyCdkApp } = require("../lib/emptyApp");
 
 const app = new cdk.App();
-new EmptyCdkApp(app, "EmptyCdkApp");
 
-console.log('EXTRA_PARAMS', process.env.EXTRA_PARAMS)
+const extraParams = JSON.parse(process.env.EXTRA_PARAMS);
+
+new EmptyCdkApp(app, extraParams.stackName, extraParams);

@@ -37,7 +37,3 @@ functions:
   cdkDeploy:
     handler: src/functions/cdkDeploy.handler
     timeout: 900
-  cdkDeployTest:
-    handler: src/functions/cdkDeployTest.handler
-    events:
-      - http: POST /cdk-deploy/test
