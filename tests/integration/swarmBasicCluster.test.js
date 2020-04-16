@@ -31,6 +31,7 @@ test("SwarmBasicCluster - call cdkDeploy without errors", async () => {
         rndStr,
         manager: {
           installPortainer: true,
+          enabled: false,
         },
       }
     )
