@@ -6,9 +6,12 @@ const {
   exactlyMatchTemplate,
   matchTemplate,
 } = require("@aws-cdk/assert");
+
 const cdk = require("@aws-cdk/core");
 
 const expectCdk = require("@aws-cdk/assert").expect;
+
+const commonFiles = require("../common/files");
 
 const {
   SwarmBasicCluster,
@@ -108,6 +111,121 @@ test("SwarmBasicCluster created without errors", () => {
 
   expect(userDataStringified).toEqual(
     expect.stringContaining("{id:setupNodeManagerCreationControl}")
+  );
+
+  expectCdk(swarmBasicCluster).to(
+    haveResource("AWS::SNS::Topic", {
+      DisplayName: "managerAutoscalingNotificationTopic",
+    })
+  );
+
+  expectCdk(swarmBasicCluster).to(
+    haveResource("AWS::Lambda::Function", {
+      Handler: "index.handler",
+      Role: {
+        "Fn::GetAtt": [
+          "managerLambdaTriggerAfterAsgWasNotifiedServiceRole52DEEF81",
+          "Arn",
+        ],
+      },
+      Code: {
+        ZipFile: commonFiles.swarmBasicCluster.manager.lambdaTriggerFile.toString(),
+      },
+      Runtime: "nodejs12.x",
+      MemorySize: 512,
+      Timeout: 900,
+    })
+  );
+
+  expectCdk(swarmBasicCluster).to(
+    haveResource("AWS::IAM::Policy", {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      PolicyName:
+        "managerLambdaTriggerAfterAsgWasNotifiedServiceRoleDefaultPolicyA4D06CDE",
+      Roles: [
+        {
+          Ref: "managerLambdaTriggerAfterAsgWasNotifiedServiceRole52DEEF81",
+        },
+      ],
+    })
+  );
+
+  expectCdk(swarmBasicCluster).to(
+    haveResource("AWS::SNS::Subscription", {
+      Protocol: "lambda",
+      TopicArn: {
+        Ref: "managerAutoscalingNotificationTopic00838E3D",
+      },
+      Endpoint: {
+        "Fn::GetAtt": [
+          "managerLambdaTriggerAfterAsgWasNotified88F5D369",
+          "Arn",
+        ],
+      },
+    })
+  );
+
+  expectCdk(swarmBasicCluster).to(
+    haveResource("AWS::AutoScaling::AutoScalingGroup", {
+      MaxSize: "0",
+      MinSize: "0",
+      DesiredCapacity: "0",
+      LaunchTemplate: {
+        LaunchTemplateId: {
+          Ref: "managerLaunchTemplate",
+        },
+        Version: {
+          "Fn::GetAtt": ["managerLaunchTemplate", "LatestVersionNumber"],
+        },
+      },
+      NotificationConfigurations: [
+        {
+          NotificationTypes: [
+            "autoscaling:EC2_INSTANCE_LAUNCH",
+            "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+            "autoscaling:EC2_INSTANCE_TERMINATE",
+            "autoscaling:EC2_INSTANCE_TERMINATE_ERROR",
+          ],
+          TopicARN: {
+            Ref: "managerAutoscalingNotificationTopic00838E3D",
+          },
+        },
+      ],
+      Tags: [
+        {
+          Key: "Application",
+          PropagateAtLaunch: true,
+          Value: "swarm-node-createdWithoutErrors",
+        },
+        {
+          Key: "Environment",
+          PropagateAtLaunch: true,
+          Value: "production",
+        },
+        {
+          Key: "SwarmRole",
+          PropagateAtLaunch: true,
+          Value: "manager",
+        },
+      ],
+      VPCZoneIdentifier: [
+        {
+          Ref: "defaultpublicSubnetSubnet1SubnetAB14372C",
+        },
+        {
+          Ref: "defaultpublicSubnetSubnet2Subnet211EA22D",
+        },
+      ],
+    })
   );
 
   expectCdk(swarmBasicCluster).to(

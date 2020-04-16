@@ -1,4 +1,5 @@
 const cdk = require("@aws-cdk/core");
+const fs = require("fs");
 
 const {
   Vpc,
@@ -7,7 +8,11 @@ const {
   CfnLaunchTemplate,
 } = require("@aws-cdk/aws-ec2");
 
+const autoscaling = require("@aws-cdk/aws-autoscaling");
 const iam = require("@aws-cdk/aws-iam");
+const sns = require("@aws-cdk/aws-sns");
+const lambda = require("@aws-cdk/aws-lambda");
+const subs = require("@aws-cdk/aws-sns-subscriptions");
 
 const { Stack } = require("../components/base/Stack");
 
@@ -33,6 +38,7 @@ class SwarmBasicCluster extends Stack {
     this.defaultVpc(props);
     this.managerSecurityGroup();
     this.managerLaunchTemplate(props);
+    this.managerAutoScalingGroup(props);
   };
 
   rootUserOperator = (props) => {
@@ -169,6 +175,98 @@ class SwarmBasicCluster extends Stack {
     });
 
     this.createdManagerLaunchTemplate = create();
+  };
+
+  managerAutoScalingGroup = (props) => {
+    this.createManagerAutoscalingNotificationTopic = this.setConfig(
+      sns.Topic,
+      "managerAutoscalingNotificationTopic",
+      {
+        displayName: "managerAutoscalingNotificationTopic",
+      }
+    );
+
+    this.createdManagerAutoscalingNotificationTopic = this.createManagerAutoscalingNotificationTopic();
+
+    const lambdaTriggerFile = fs.readFileSync(
+      `${__dirname}/SwarmBasicCluster/manager/LambdaTriggers/afterAutoscalingWasNotified.js`
+    );
+
+    this.createManagerLambdaTriggerAfterAsgWasNotified = this.setConfig(
+      lambda.Function,
+      "managerLambdaTriggerAfterAsgWasNotified",
+      {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline(lambdaTriggerFile.toString()),
+        handler: "index.handler",
+        timeout: cdk.Duration.seconds(900),
+        memorySize: 512,
+      }
+    );
+
+    this.createdManagerLambdaTriggerAfterAsgWasNotified = this.createManagerLambdaTriggerAfterAsgWasNotified();
+
+    this.createdManagerLambdaTriggerAfterAsgWasNotified.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ["*"],
+        resources: ["*"],
+      })
+    );
+
+    this.createdManagerAutoscalingNotificationTopic.addSubscription(
+      new subs.LambdaSubscription(
+        this.createdManagerLambdaTriggerAfterAsgWasNotified
+      )
+    );
+
+    const selection = this.createdDefaultVpc.selectSubnets({
+      subnetType: SubnetType.PUBLIC,
+    });
+
+    this.createManagerAsg = this.setConfig(
+      autoscaling.CfnAutoScalingGroup,
+      "managerAutoScaling",
+      {
+        desiredCapacity: "0",
+        minSize: "0",
+        maxSize: "0",
+        launchTemplate: {
+          launchTemplateId: this.createdManagerLaunchTemplate.ref,
+          version: this.createdManagerLaunchTemplate.attrLatestVersionNumber,
+        },
+        notificationConfigurations: [
+          {
+            notificationTypes: [
+              "autoscaling:EC2_INSTANCE_LAUNCH",
+              "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+              "autoscaling:EC2_INSTANCE_TERMINATE",
+              "autoscaling:EC2_INSTANCE_TERMINATE_ERROR",
+            ],
+            topicArn: this.createdManagerAutoscalingNotificationTopic.topicArn,
+          },
+        ],
+        vpcZoneIdentifier: selection.subnetIds,
+        tags: [
+          {
+            key: "Application",
+            value: `swarm-node-${props.stackName}`,
+            propagateAtLaunch: true,
+          },
+          {
+            key: "Environment",
+            value: "production",
+            propagateAtLaunch: true,
+          },
+          {
+            key: "SwarmRole",
+            value: "manager",
+            propagateAtLaunch: true,
+          },
+        ],
+      }
+    );
+
+    this.createdManagerAsg = this.createManagerAsg();
   };
 }
 
