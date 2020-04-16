@@ -1,7 +1,7 @@
 {
   "name": "pilotplan",
   "version": "0.1.0",
-  "description": "PilotPlan, the Constructor",
+  "description": "PilotPlan, Your New Robotization Plan",
   "repository": "git@github.com:cristiancmello/pilotplan.git",
   "author": "Cristian Mello <cristianc.mello@gmail.com>",
   "license": "MIT",
@@ -11,7 +11,7 @@
     "start": "serverless offline start --noTimeout --port 3000",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:watch:fast": "yarn test:watch --testPathIgnorePatterns cdk-builder/*",
+    "test:watch:fast": "yarn test:watch --testPathIgnorePatterns integration/*",
     "cdk:deploy": "./node_modules/.bin/cdk",
     "sls:invoke:local:watch": "serverless invoke local --watch -f",
     "sls:invoke": "serverless invoke -f",
