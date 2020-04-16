@@ -14,11 +14,4 @@ insertSwarmLeaveClusterScript() {
 
 insertSwarmLeaveClusterScript
 
-sudo systemctl start rexray
-sleep 10
-
 sudo docker swarm init --advertise-addr eth0
-
-docker plugin enable rexray/ebs:latest
-docker plugin enable rexray/s3fs:latest
-docker plugin enable rexray/efs:latest
