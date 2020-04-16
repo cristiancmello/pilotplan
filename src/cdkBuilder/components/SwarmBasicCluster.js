@@ -201,6 +201,9 @@ class SwarmBasicCluster extends Stack {
         handler: "index.handler",
         timeout: cdk.Duration.seconds(900),
         memorySize: 512,
+        environment: {
+          STACK_NAME: props.stackName,
+        },
       }
     );
 
@@ -223,13 +226,27 @@ class SwarmBasicCluster extends Stack {
       subnetType: SubnetType.PUBLIC,
     });
 
+    let autoscalingComputingCapacity = {
+      desiredCapacity: "0",
+      minSize: "0",
+      maxSize: "0",
+    };
+
+    props.manager = props.manager || {};
+
+    if (props.manager.enabled) {
+      autoscalingComputingCapacity = {
+        desiredCapacity: "1",
+        minSize: "1",
+        maxSize: "1",
+      };
+    }
+
     this.createManagerAsg = this.setConfig(
       autoscaling.CfnAutoScalingGroup,
       "managerAutoScaling",
       {
-        desiredCapacity: "0",
-        minSize: "0",
-        maxSize: "0",
+        ...autoscalingComputingCapacity,
         launchTemplate: {
           launchTemplateId: this.createdManagerLaunchTemplate.ref,
           version: this.createdManagerLaunchTemplate.attrLatestVersionNumber,
