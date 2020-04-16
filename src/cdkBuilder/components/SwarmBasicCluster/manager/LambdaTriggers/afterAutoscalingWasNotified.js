@@ -8,29 +8,19 @@ module.exports.handler = async (event) => {
   const instanceId = snsMessage.EC2InstanceId;
   const autoScalingEvent = snsMessage.Event;
 
-  console.log({
-    snsMessage,
-    instanceId,
-    autoScalingEvent,
-  });
+  if (autoScalingEvent === "autoscaling:EC2_INSTANCE_TERMINATE") {
+    const stackName = process.env.STACK_NAME;
 
-  // const ssmGetStackNamePromise = SSM.getParameter({
-  //   Name: `/swarmClusters/managers/${instanceId}/stackName`,
-  // }).promise();
+    const deleteResult = await SSM.deleteParameters({
+      Names: [
+        `/${stackName}/swarmCluster/managers/${instanceId}/jointoken/as/worker`,
+        `/${stackName}/swarmCluster/managers/${instanceId}/ipv4`,
+        `/${stackName}/swarmCluster/managers/leader/instanceId`,
+      ],
+    }).promise();
 
-  // if (autoScalingEvent === "autoscaling:EC2_INSTANCE_TERMINATE") {
-  //   const stackName = (await ssmGetStackNamePromise).Parameter.Value;
-
-  //   const deleteResult = await SSM.deleteParameters({
-  //     Names: [
-  //       `/swarmClusters/${stackName}/manager/ipv4`,
-  //       `/swarmClusters/${stackName}/manager/jointoken/as/worker`,
-  //       `/swarmClusters/managers/${instanceId}/stackName`,
-  //     ],
-  //   }).promise();
-
-  //   console.log(deleteResult);
-  // }
+    console.log(deleteResult);
+  }
 
   return {};
 };

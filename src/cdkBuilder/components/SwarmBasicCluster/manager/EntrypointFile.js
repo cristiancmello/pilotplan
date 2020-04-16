@@ -34,22 +34,22 @@ export AWS_SECRET_ACCESS_KEY=${credentials.aws_secret_access_key}
 export AWS_DEFAULT_REGION=${credentials.aws_region}
 
 aws ssm put-parameter \
-  --name "/swarmClusters/${stackName}/manager/jointoken/as/worker" \
+  --name "/${stackName}/swarmCluster/managers/$DOCKER_SWARM_MANAGER_INSTANCE_ID/jointoken/as/worker" \
   --value "$DOCKER_SWARM_JOINTOKEN_WORKER" \
   --type "String" \
   --tier Standard \
   --overwrite
 
 aws ssm put-parameter \
-  --name "/swarmClusters/${stackName}/manager/ipv4" \
+  --name "/${stackName}/swarmCluster/managers/$DOCKER_SWARM_MANAGER_INSTANCE_ID/ipv4" \
   --value "$EC2_INSTANCE_LOCAL_IPV4" \
   --type "String" \
   --tier Standard \
   --overwrite
 
 aws ssm put-parameter \
-  --name "/swarmClusters/managers/$DOCKER_SWARM_MANAGER_INSTANCE_ID/stackName" \
-  --value "${stackName}" \
+  --name "/${stackName}/swarmCluster/managers/leader/instanceId" \
+  --value "$DOCKER_SWARM_MANAGER_INSTANCE_ID" \
   --type "String" \
   --tier Standard \
   --overwrite
@@ -60,6 +60,8 @@ const installPortainerScript = () => {
   return `
 # {id:portainerInstallation}
 # Installing Portainer Server and Agent
+INSTANCE_PUBLIC_DNS=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+
 curl -L https://downloads.portainer.io/portainer-agent-stack.yml -o portainer-agent-stack.yml
 docker stack deploy --compose-file=portainer-agent-stack.yml portainer
 

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-INSTANCE_PUBLIC_DNS=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
-
 insertSwarmLeaveClusterScript() {
   sudo sh -c "cat << EOF >> /etc/rc.d/rc0.d/01SWARMleave
   #!/bin/sh
@@ -17,7 +15,7 @@ insertSwarmLeaveClusterScript() {
 insertSwarmLeaveClusterScript
 
 sudo systemctl start rexray
-# sleep 10
+sleep 10
 
 sudo docker swarm init --advertise-addr eth0
 
